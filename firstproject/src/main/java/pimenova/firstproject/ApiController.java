@@ -10,33 +10,65 @@ import java.util.List;
 @Controller
 @RestController
 public class ApiController {
-    private List<String> messages = new ArrayList<>();
-    @GetMapping("messages")
-    public List<String> getMessages() {
-        return messages;
+    private List<String> themes = new ArrayList<>();
+    /* curl http://localhost:8080/themes -H 'Content-Type:
+  text/plain' */
+    @GetMapping("themes")
+    public List<String> getThemes() {
+        return themes;
     }
-    /* curl -X POST http://localhost:8080/messages -H 'Content-Type:
-   text/plain' -d 'text' */
-    @PostMapping("messages")
-    public void addMessage(@RequestBody String text) {
-        messages.add(text);
+    /* curl -X POST http://localhost:8080/themes -H 'Content-Type:
+   text/plain' -d "TEXT" */
+    @PostMapping("themes")
+    public void addTheme(@RequestBody String text) {
+        themes.add(text);
     }
-    @GetMapping("messages/{index}")
-    public String getMessage(@PathVariable("index") Integer index) {
-        return messages.get(index);
+    /* curl http://localhost:8080/themes/INDEX -H 'Content-Type:
+   text/plain' */
+    @GetMapping("themes/{index}")
+    public ResponseEntity<String> getTheme(@PathVariable("index") Integer index) {
+        try {
+            return ResponseEntity.ok(themes.get(index));
+        } catch (IndexOutOfBoundsException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
-    @DeleteMapping("messages/{index}")
-    public void deleteText(@PathVariable("index") Integer index) {
-        messages.remove((int) index);
+    /* curl -X DELETE http://localhost:8080/themes/INDEX -H 'Content-Type:
+   text/plain' */
+    @DeleteMapping("themes/{index}")
+    public ResponseEntity<String> deleteText(@PathVariable("index") Integer index) {
+        try {
+            return ResponseEntity.ok(themes.remove((int) index));
+        } catch (IndexOutOfBoundsException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
-    @PutMapping("messages/{index}")
-    public void updateMessage(
+    /* curl -X POST http://localhost:8080/themes/INDEX -H 'Content-Type:
+   text/plain' -d "TEXT" */
+    @PostMapping("themes/{index}")
+    public ResponseEntity<String> updateThemes(
             @PathVariable("index") Integer i,
-            @RequestBody String message) {
-        messages.remove((int) i);
-        messages.add(i, message);
+            @RequestBody String theme) {
+        try {
+            return ResponseEntity.ok(themes.set(i, theme));
+        } catch (IndexOutOfBoundsException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
-    @GetMapping("books")
-    public ResponseEntity<String> getText() {
-        return ResponseEntity.ok("Hello text");
-    }}
+
+    @GetMapping("themes/count")
+    /* curl http://localhost:8080/themes/count -H 'Content-Type:
+   text/plain' */
+    public int getThemesCount() {
+        return themes.size();
+    }
+    /* curl -X POST http://localhost:8080/themes/INDEX/create -H 'Content-Type:
+   text/plain' -d "TEXT" */
+    @PostMapping("themes/{index}/create")
+    public void createTheme(
+            @PathVariable("index") Integer i,
+            @RequestBody String theme) {
+        themes.add(i, theme);
+    }
+
+}
